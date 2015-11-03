@@ -1,0 +1,10 @@
+source 'https://github.com/CocoaPods/Specs.git'
+use_frameworks!
+
+
+target 'SMHTTPClient_Tests', :exclusive => true do
+  pod "SMHTTPClient", :path => "../"
+
+  pod 'Specta'
+  pod 'Expecta'
+end
