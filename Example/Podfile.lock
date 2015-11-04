@@ -1,0 +1,20 @@
+PODS:
+  - Expecta (1.0.3)
+  - SMHTTPClient (0.1.0)
+  - Specta (1.0.4)
+
+DEPENDENCIES:
+  - Expecta
+  - SMHTTPClient (from `../`)
+  - Specta
+
+EXTERNAL SOURCES:
+  SMHTTPClient:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Expecta: 9d1bff6c8b0eeee73a166a2ee898892478927a15
+  SMHTTPClient: 945e965dd8dac714300e19a4e7a35ba363fc2aad
+  Specta: 69bb134672aae190a1379ff91df07dad8dd1f869
+
+COCOAPODS: 0.39.0
