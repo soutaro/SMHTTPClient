@@ -4,6 +4,7 @@ use_frameworks!
 
 target 'SMHTTPClient_Tests', :exclusive => true do
   pod "SMHTTPClient", :path => "../"
+  pod "GCDWebServer"
 
   pod 'Specta'
   pod 'Expecta'

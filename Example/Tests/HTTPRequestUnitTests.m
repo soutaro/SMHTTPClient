@@ -25,7 +25,7 @@
 
 @end
 
-SpecBegin(SMHTTPRequestSpecs)
+SpecBegin(SMHTTPRequestUnitSpecs)
 
 describe(@"receive", ^{
     NSString *responseString = [@[@"HTTP/1.1 200 OK",
