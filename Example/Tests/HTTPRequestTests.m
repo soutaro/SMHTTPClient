@@ -207,6 +207,41 @@ describe(@"+", ^{
             expect(request.error).notTo.beNil();
         });
     });
+    
+    describe(@"abort", ^{
+        beforeEach(^{
+            [webServer addDefaultHandlerForMethod:@"GET"
+                                     requestClass:[GCDWebServerRequest class]
+                                     processBlock:^ GCDWebServerResponse* (GCDWebServerRequest *request) {
+                                         [NSThread sleepForTimeInterval:10];
+                                         return [GCDWebServerDataResponse responseWithJSONObject:@[]];
+                                     }];
+            
+            [webServer startWithPort:8080 bonjourName:nil];
+        });
+        
+        it(@"exits from wait data", ^{
+            SMHTTPRequest *request = [[SMHTTPRequest alloc] initWithHost:localhost
+                                                                    path:@"/test"
+                                                                  method:@"GET"
+                                                                    body:nil
+                                                                  header:nil];
+            
+            dispatch_queue_t queue = dispatch_queue_create("com.soutaro.test", NULL);
+            
+            dispatch_async(queue, ^{
+                [request run];
+            });
+            
+            [NSThread sleepForTimeInterval:0.1];
+            
+            expect(request.status).to.equal(SMHTTPRequestStatusRequestSent);
+            
+            [request abort:nil];
+
+            expect(request.status).to.equal(SMHTTPRequestStatusAborted);
+        });
+    });
 });
 
 SpecEnd

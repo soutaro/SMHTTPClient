@@ -46,19 +46,23 @@ NSInteger const SMHTTPClientErrorCodeInvalidResponse = 1;
 
 - (void)run
 {
-    [self connect];
-    if ([self shouldExitFromRun]) return;
-    [self send];
-    if ([self shouldExitFromRun]) return;
-    [self receive];
-    if ([self shouldExitFromRun]) return;
-    [self close];
+    [self connect:^{
+        if ([self shouldExitFromRun]) return;
+        [self send];
+        if ([self shouldExitFromRun]) return;
+        [self receive];
+        if ([self shouldExitFromRun]) return;
+    }];
 }
 
 - (void)abort:(NSError *)error
 {
-    self.status = SMHTTPRequestStatusAborted;
     _error = error;
+    self.status = SMHTTPRequestStatusAborted;
+    
+    if (self.sock) {
+        shutdown(self.sock, SHUT_RDWR);
+    }
 }
 
 + (BOOL)resolveHostname:(NSString *)hostname port:(NSUInteger)port callback:(void (^)(struct sockaddr *))callback
@@ -99,14 +103,18 @@ NSInteger const SMHTTPClientErrorCodeInvalidResponse = 1;
 
 - (void)errorWithPosixErrono
 {
-    self.status = SMHTTPRequestStatusError;
-    _error = [[NSError alloc] initWithDomain:NSPOSIXErrorDomain code:errno userInfo:nil];
+    if (self.status != SMHTTPRequestStatusAborted) {
+        self.status = SMHTTPRequestStatusError;
+        _error = [[NSError alloc] initWithDomain:NSPOSIXErrorDomain code:errno userInfo:nil];
+    }
 }
 
 - (void)errorWithCode:(NSInteger)code
 {
-    self.status = SMHTTPRequestStatusError;
-    _error = [[NSError alloc] initWithDomain:SMHTTPClientErrorDomain code:code userInfo:nil];
+    if (self.status != SMHTTPRequestStatusAborted) {
+        self.status = SMHTTPRequestStatusError;
+        _error = [[NSError alloc] initWithDomain:SMHTTPClientErrorDomain code:code userInfo:nil];
+    }
 }
 
 - (BOOL)checkStatus:(SMHTTPRequestStatus)expectedStatus
@@ -119,7 +127,7 @@ NSInteger const SMHTTPClientErrorCodeInvalidResponse = 1;
     }
 }
 
-- (void)connect
+- (void)connect:(void(^)())k
 {
     if (![self checkStatus:SMHTTPRequestStatusInit]) return;
     
@@ -137,7 +145,10 @@ NSInteger const SMHTTPClientErrorCodeInvalidResponse = 1;
     
     if (self.status == SMHTTPRequestStatusConnecting) {
         self.status = SMHTTPRequestStatusConnected;
+        k();
     }
+    
+    [self close];
 }
 
 - (void)send
@@ -233,7 +244,8 @@ NSInteger const SMHTTPClientErrorCodeInvalidResponse = 1;
         // Fill buffer
         unsigned char buf[4096];
         long recv_size = recv(self.sock, buf, sizeof(buf), 0);
-        if (recv_size < 0) {
+        if (recv_size <= 0) {
+            // Maybe an error or aborted
             return NO;
         }
         
@@ -260,11 +272,16 @@ NSInteger const SMHTTPClientErrorCodeInvalidResponse = 1;
     char *httpHeader = "HTTP/1.1";
     
     for (int i = 0; i < strlen(httpHeader); i++) {
-        if ([self nextByte:&c] && c == httpHeader[i]) {
-            // ok
+        if ([self nextByte:&c]) {
+            if(c == httpHeader[i]) {
+                // ok
+            } else {
+                // error
+                [self errorWithCode:SMHTTPClientErrorCodeInvalidResponse];
+                return;
+            }
         } else {
-            // error
-            [self errorWithCode:SMHTTPClientErrorCodeInvalidResponse];
+            // aborted?
             return;
         }
     }
