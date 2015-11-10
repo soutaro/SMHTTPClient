@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = "SMHTTPClient"
   s.version          = "0.1.0"
-  s.summary          = "A short description of SMHTTPClient."
+  s.summary          = "HTTP/1.1 client, based on socket"
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -17,13 +17,15 @@ Pod::Spec.new do |s|
 #   * Write the description between the DESC delimiters below.
 #   * Finally, don't worry about the indent, CocoaPods strips it!  
   s.description      = <<-DESC
+  Use SMHTTPClient if you need a HTTP/1.1 access without TLS.
+  This is expected for apps to be used with appliance which speaks HTTP/1.1 without TLS and Bonjour.
                        DESC
 
-  s.homepage         = "https://github.com/<GITHUB_USERNAME>/SMHTTPClient"
+  s.homepage         = "https://github.com/soutaro/SMHTTPClient"
   # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
   s.license          = 'MIT'
   s.author           = { "Soutaro Matsumoto" => "matsumoto@soutaro.com" }
-  s.source           = { :git => "https://github.com/<GITHUB_USERNAME>/SMHTTPClient.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/soutaro/SMHTTPClient.git", :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.platform     = :ios, '7.0'
