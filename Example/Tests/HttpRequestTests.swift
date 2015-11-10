@@ -1,7 +1,6 @@
 import Foundation
 import Quick
 import Nimble
-import CocoaAsyncSocket
 import GCDWebServer
 
 func requestSuccessfullyCompleted(request: SMHttpRequest) -> Bool {
