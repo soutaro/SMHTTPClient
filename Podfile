@@ -2,9 +2,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
 
-target 'SMHTTPClient_Tests', :exclusive => true do
-  pod "SMHTTPClient", :path => "../"
-
+target 'SMHTTPClientTests', :exclusive => true do
   pod "GCDWebServer"
   pod 'Quick'
   pod 'Nimble'

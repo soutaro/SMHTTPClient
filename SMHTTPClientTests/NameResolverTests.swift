@@ -1,6 +1,7 @@
 import Foundation
 import Quick
 import Nimble
+@testable import SMHTTPClient
 
 func in_addr_from_sockaddr<T>(address: sockaddr, closure: (UnsafePointer<Void>) -> T) -> T {
     var a = address

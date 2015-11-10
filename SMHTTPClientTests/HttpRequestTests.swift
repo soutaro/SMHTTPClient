@@ -2,6 +2,7 @@ import Foundation
 import Quick
 import Nimble
 import GCDWebServer
+@testable import SMHTTPClient
 
 func requestSuccessfullyCompleted(request: HttpRequest) -> Bool {
     switch request.status {
