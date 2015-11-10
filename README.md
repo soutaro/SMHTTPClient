@@ -1,6 +1,6 @@
 # SMHTTPClient
 
-[![CI Status](http://img.shields.io/travis/Soutaro Matsumoto/SMHTTPClient.svg?style=flat)](https://travis-ci.org/Soutaro Matsumoto/SMHTTPClient)
+[![CI Status](http://img.shields.io/travis/soutaro/SMHTTPClient.svg?style=flat)](https://travis-ci.org/soutaro/SMHTTPClient)
 [![Version](https://img.shields.io/cocoapods/v/SMHTTPClient.svg?style=flat)](http://cocoapods.org/pods/SMHTTPClient)
 [![License](https://img.shields.io/cocoapods/l/SMHTTPClient.svg?style=flat)](http://cocoapods.org/pods/SMHTTPClient)
 [![Platform](https://img.shields.io/cocoapods/p/SMHTTPClient.svg?style=flat)](http://cocoapods.org/pods/SMHTTPClient)
