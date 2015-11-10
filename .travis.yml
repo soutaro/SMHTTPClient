@@ -11,7 +11,7 @@ before_install:
 script:
 - pwd
 - ls
-- xcodebuild -workspace SMHTTPClient.xcworkspace list
+- xcodebuild -workspace SMHTTPClient.xcworkspace -list
 - set -o pipefail && xcodebuild test -workspace SMHTTPClient.xcworkspace -scheme SMHTTPClient -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO | xcpretty
 - pod lib lint
 osx_image: xcode7.1
