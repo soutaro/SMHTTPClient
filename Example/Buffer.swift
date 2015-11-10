@@ -1,6 +1,6 @@
 import Foundation
 
-internal class SMBuffer {
+internal class Buffer {
     private var data: NSMutableData
     private var offset: Int
     private let filler: (UnsafeMutablePointer<UInt8>, Int) throws -> Int

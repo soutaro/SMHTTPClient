@@ -3,21 +3,21 @@ import Quick
 import Nimble
 import GCDWebServer
 
-func requestSuccessfullyCompleted(request: SMHttpRequest) -> Bool {
+func requestSuccessfullyCompleted(request: HttpRequest) -> Bool {
     switch request.status {
     case .Completed(_): return true
     default: return false
     }
 }
 
-func requestHasError(request: SMHttpRequest) -> Bool {
+func requestHasError(request: HttpRequest) -> Bool {
     switch request.status {
     case .Error(_): return true
     default: return false
     }
 }
 
-func requestIsAborted(request: SMHttpRequest) -> Bool {
+func requestIsAborted(request: HttpRequest) -> Bool {
     return request.status == .Aborted
 }
 
@@ -40,7 +40,7 @@ class HttpRequestTests: QuickSpec {
         var server: GCDWebServer?
         
         beforeEach {
-            let resolver = SMNameResolver(hostname: "localhost", port: 8080)
+            let resolver = NameResolver(hostname: "localhost", port: 8080)
             resolver.run()
             address = resolver.IPv4Results.first
             
@@ -55,7 +55,7 @@ class HttpRequestTests: QuickSpec {
             }
         }
         
-        describe("SMHttpRequest#connect") {
+        describe("HttpRequest#connect") {
             describe("establishing connection") {
                 it("connects to server") {
                     server!.addDefaultHandlerForMethod("GET", requestClass: GCDWebServerRequest.self, processBlock: { (request: GCDWebServerRequest!) -> GCDWebServerResponse! in
@@ -63,7 +63,7 @@ class HttpRequestTests: QuickSpec {
                     })
                     server!.startWithPort(8080, bonjourName: nil)
                     
-                    let request = SMHttpRequest(address: address!, path: "/", method: .GET, header: [])
+                    let request = HttpRequest(address: address!, path: "/", method: .GET, header: [])
                     request.run()
                     
                     expect(requestHasError(request)).to(equal(false))
@@ -71,10 +71,10 @@ class HttpRequestTests: QuickSpec {
                 }
                 
                 it("sets error if connection failed") {
-                    let request = SMHttpRequest(address: address!, path: "/", method: .GET, header: [])
+                    let request = HttpRequest(address: address!, path: "/", method: .GET, header: [])
                     request.run()
                     
-                    expect(request.status).to(equal(SMHttpRequestStatus.Error(NSError(domain: NSPOSIXErrorDomain, code: 61, userInfo: [:]))))
+                    expect(request.status).to(equal(HttpRequestStatus.Error(NSError(domain: NSPOSIXErrorDomain, code: 61, userInfo: [:]))))
                 }
             }
             
@@ -87,7 +87,7 @@ class HttpRequestTests: QuickSpec {
                     })
                     server!.startWithPort(8080, bonjourName: nil)
                     
-                    let request = SMHttpRequest(address: address!, path: "/test123", method: .GET, header: [("Connection", "close")])
+                    let request = HttpRequest(address: address!, path: "/test123", method: .GET, header: [("Connection", "close")])
                     request.run()
                     
                     expect(requestSuccessfullyCompleted(request)).to(beTrue())
@@ -102,7 +102,7 @@ class HttpRequestTests: QuickSpec {
                     })
                     server!.startWithPort(8080, bonjourName: nil)
                     
-                    let request = SMHttpRequest(address: address!, path: "/test123", method: .GET, header: [("Connection", "close"), ("Host", "localhost")])
+                    let request = HttpRequest(address: address!, path: "/test123", method: .GET, header: [("Connection", "close"), ("Host", "localhost")])
                     request.run()
                     
                     expect(requestSuccessfullyCompleted(request)).to(beTrue())
@@ -120,7 +120,7 @@ class HttpRequestTests: QuickSpec {
                     server!.startWithPort(8080, bonjourName: nil)
                     
                     let jsonData = try! NSJSONSerialization.dataWithJSONObject([1,2,3], options: NSJSONWritingOptions.PrettyPrinted)
-                    let request = SMHttpRequest(address: address!, path: "/test123", method: .POST(jsonData), header: [("Connection", "close"), ("Content-Type", "application/json"), ("Content-Length", String(jsonData.length))])
+                    let request = HttpRequest(address: address!, path: "/test123", method: .POST(jsonData), header: [("Connection", "close"), ("Content-Type", "application/json"), ("Content-Length", String(jsonData.length))])
                     request.run()
                     
                     expect(requestSuccessfullyCompleted(request)).to(beTrue())
@@ -135,7 +135,7 @@ class HttpRequestTests: QuickSpec {
                     })
                     server!.startWithPort(8080, bonjourName: nil)
                     
-                    let request = SMHttpRequest(address: address!, path: "/test123", method: .GET, header: [("Connection", "close"), ("Host", "localhost")])
+                    let request = HttpRequest(address: address!, path: "/test123", method: .GET, header: [("Connection", "close"), ("Host", "localhost")])
                     request.run()
                     
                     expect(requestSuccessfullyCompleted(request)).to(beTrue())
@@ -154,7 +154,7 @@ class HttpRequestTests: QuickSpec {
                     })
                     server!.startWithPort(8080, bonjourName: nil)
                     
-                    let request = SMHttpRequest(address: address!, path: "/test123", method: .GET, header: [("Connection", "close"), ("Host", "localhost")])
+                    let request = HttpRequest(address: address!, path: "/test123", method: .GET, header: [("Connection", "close"), ("Host", "localhost")])
                     request.run()
                     
                     expect(requestSuccessfullyCompleted(request)).to(beTrue())
@@ -175,7 +175,7 @@ class HttpRequestTests: QuickSpec {
                     })
                     server!.startWithPort(8080, bonjourName: nil)
                     
-                    let request = SMHttpRequest(address: address!, path: "/test123", method: .GET, header: [("Connection", "close"), ("Host", "localhost")])
+                    let request = HttpRequest(address: address!, path: "/test123", method: .GET, header: [("Connection", "close"), ("Host", "localhost")])
                     request.run()
                     
                     expect(requestSuccessfullyCompleted(request)).to(beTrue())
@@ -190,11 +190,11 @@ class HttpRequestTests: QuickSpec {
                 }
 
                 it("receives chunked body") {
-                    let resolver = SMNameResolver(hostname: "qiita.com", port: 80)
+                    let resolver = NameResolver(hostname: "qiita.com", port: 80)
                     resolver.run()
                     let address = resolver.IPv4Results.first!
                     
-                    let request = SMHttpRequest(address: address, path: "/ryotapoi/items/e674615a613061c08cae", method: .GET, header: [("Connection", "close"), ("Host", "qiita.com")])
+                    let request = HttpRequest(address: address, path: "/ryotapoi/items/e674615a613061c08cae", method: .GET, header: [("Connection", "close"), ("Host", "qiita.com")])
                     request.run()
                     
                     expect(requestSuccessfullyCompleted(request)).to(beTrue())
@@ -213,7 +213,7 @@ class HttpRequestTests: QuickSpec {
                     })
                     server!.startWithPort(8080, bonjourName: nil)
                     
-                    let request = SMHttpRequest(address: address!, path: "/test123", method: .HEAD, header: [("Connection", "close"), ("Host", "localhost")])
+                    let request = HttpRequest(address: address!, path: "/test123", method: .HEAD, header: [("Connection", "close"), ("Host", "localhost")])
                     request.run()
                     
                     expect(requestSuccessfullyCompleted(request)).to(beTrue())
@@ -229,7 +229,7 @@ class HttpRequestTests: QuickSpec {
             }
         }
         
-        describe("SMHttpRequest#abort") {
+        describe("HttpRequest#abort") {
             it("stops running request") {
                 server!.addDefaultHandlerForMethod("GET", requestClass: GCDWebServerRequest.self, processBlock: { (request: GCDWebServerRequest!) -> GCDWebServerResponse! in
                     NSThread.sleepForTimeInterval(5)
@@ -237,14 +237,14 @@ class HttpRequestTests: QuickSpec {
                 })
                 server!.startWithPort(8080, bonjourName: nil)
                 
-                let request = SMHttpRequest(address: address!, path: "/test123", method: .HEAD, header: [("Connection", "close"), ("Host", "localhost")])
+                let request = HttpRequest(address: address!, path: "/test123", method: .HEAD, header: [("Connection", "close"), ("Host", "localhost")])
                 
                 let queue = dispatch_queue_create("com.soutaro.SMHttpRequestTests.test", nil)
                 
                 let delay = 0.5 * Double(NSEC_PER_SEC)
                 let time  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
                 dispatch_after(time, queue, {
-                    expect(request.status).to(equal(SMHttpRequestStatus.RequestSent));
+                    expect(request.status).to(equal(HttpRequestStatus.RequestSent));
                     request.abort();
                 })
                 
@@ -262,7 +262,7 @@ class HttpRequestTests: QuickSpec {
                 })
                 server!.startWithPort(8080, bonjourName: nil)
                 
-                let request = SMHttpRequest(address: address!, path: "/test123", method: .HEAD, header: [("Connection", "close"), ("Host", "localhost")])
+                let request = HttpRequest(address: address!, path: "/test123", method: .HEAD, header: [("Connection", "close"), ("Host", "localhost")])
                 request.run()
                 
                 expect(requestSuccessfullyCompleted(request)).to(beTrue())

@@ -11,11 +11,12 @@
 		6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
-		AB91FB7D1BEDCBAB00807C88 /* SMNameResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB91FB7C1BEDCBAB00807C88 /* SMNameResolver.swift */; };
+		AB91FB7D1BEDCBAB00807C88 /* NameResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB91FB7C1BEDCBAB00807C88 /* NameResolver.swift */; };
 		AB91FB7F1BEE5E3700807C88 /* NameResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB91FB7E1BEE5E3700807C88 /* NameResolverTests.swift */; };
-		AB91FB811BEF232600807C88 /* SMHttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB91FB801BEF232600807C88 /* SMHttpRequest.swift */; };
+		AB91FB811BEF232600807C88 /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB91FB801BEF232600807C88 /* HttpRequest.swift */; };
 		AB91FB831BF01F9D00807C88 /* HttpRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB91FB821BF01F9D00807C88 /* HttpRequestTests.swift */; };
-		AB91FB871BF198B900807C88 /* SMBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB91FB861BF198B900807C88 /* SMBuffer.swift */; };
+		AB91FB871BF198B900807C88 /* Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB91FB861BF198B900807C88 /* Buffer.swift */; };
+		AB91FB891BF1CEA500807C88 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB91FB881BF1CEA500807C88 /* Error.swift */; };
 		D5A5F3FEE041E70F4B4C8B3B /* Pods_SMHTTPClient_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7C3351F625A340252A16E47 /* Pods_SMHTTPClient_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -29,11 +30,12 @@
 		6003F5B9195388D20070C39A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
 		A15E041BFDEFEF97CEE5A72C /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		AB91FB7C1BEDCBAB00807C88 /* SMNameResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMNameResolver.swift; sourceTree = "<group>"; };
+		AB91FB7C1BEDCBAB00807C88 /* NameResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameResolver.swift; sourceTree = "<group>"; };
 		AB91FB7E1BEE5E3700807C88 /* NameResolverTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameResolverTests.swift; sourceTree = "<group>"; };
-		AB91FB801BEF232600807C88 /* SMHttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMHttpRequest.swift; sourceTree = "<group>"; };
+		AB91FB801BEF232600807C88 /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
 		AB91FB821BF01F9D00807C88 /* HttpRequestTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequestTests.swift; sourceTree = "<group>"; };
-		AB91FB861BF198B900807C88 /* SMBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMBuffer.swift; sourceTree = "<group>"; };
+		AB91FB861BF198B900807C88 /* Buffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Buffer.swift; sourceTree = "<group>"; };
+		AB91FB881BF1CEA500807C88 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		AC744B44909CA40E36CDE464 /* Pods-SMHTTPClient_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SMHTTPClient_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SMHTTPClient_Tests/Pods-SMHTTPClient_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		ADE2710BDD213BC8C5BFAF97 /* SMHTTPClient.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = SMHTTPClient.podspec; path = ../SMHTTPClient.podspec; sourceTree = "<group>"; };
 		D3FA001E2B2D0F6B368E6AD3 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
@@ -59,9 +61,10 @@
 		6003F581195388D10070C39A = {
 			isa = PBXGroup;
 			children = (
-				AB91FB861BF198B900807C88 /* SMBuffer.swift */,
-				AB91FB801BEF232600807C88 /* SMHttpRequest.swift */,
-				AB91FB7C1BEDCBAB00807C88 /* SMNameResolver.swift */,
+				AB91FB881BF1CEA500807C88 /* Error.swift */,
+				AB91FB861BF198B900807C88 /* Buffer.swift */,
+				AB91FB801BEF232600807C88 /* HttpRequest.swift */,
+				AB91FB7C1BEDCBAB00807C88 /* NameResolver.swift */,
 				60FF7A9C1954A5C5007DD14C /* Podspec Metadata */,
 				6003F5B5195388D20070C39A /* Tests */,
 				6003F58C195388D20070C39A /* Frameworks */,
@@ -250,10 +253,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AB91FB871BF198B900807C88 /* SMBuffer.swift in Sources */,
-				AB91FB7D1BEDCBAB00807C88 /* SMNameResolver.swift in Sources */,
-				AB91FB811BEF232600807C88 /* SMHttpRequest.swift in Sources */,
+				AB91FB871BF198B900807C88 /* Buffer.swift in Sources */,
+				AB91FB7D1BEDCBAB00807C88 /* NameResolver.swift in Sources */,
+				AB91FB811BEF232600807C88 /* HttpRequest.swift in Sources */,
 				AB91FB831BF01F9D00807C88 /* HttpRequestTests.swift in Sources */,
+				AB91FB891BF1CEA500807C88 /* Error.swift in Sources */,
 				AB91FB7F1BEE5E3700807C88 /* NameResolverTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

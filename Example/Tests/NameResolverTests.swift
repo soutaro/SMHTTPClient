@@ -39,45 +39,45 @@ func numericAddress(address: sockaddr) -> String {
 
 class NameResolverTests: QuickSpec {
     override func spec() {
-        describe("SMNameResolver#run") {
+        describe("NameResolver#run") {
             it("resolves hostname to sockaddrs") {
-                let resolver = SMNameResolver(hostname: "google.com", port: 80);
+                let resolver = NameResolver(hostname: "google.com", port: 80);
                 resolver.run();
                 print(resolver.status)
-                expect(resolver.status).to(equal(SMNameResolverState.Resolved));
+                expect(resolver.status).to(equal(NameResolverState.Resolved));
                 expect(resolver.results.count).to(beGreaterThan(0));
                 expect(resolver.IPv4Results.count + resolver.IPv6Results.count).to(equal(resolver.results.count))
             }
 
             it("resolves numeric name to sockaddrs") {
-                let resolver = SMNameResolver(hostname: "8.8.8.8", port: 80);
+                let resolver = NameResolver(hostname: "8.8.8.8", port: 80);
                 resolver.run();
-                expect(resolver.status).to(equal(SMNameResolverState.Resolved));
+                expect(resolver.status).to(equal(NameResolverState.Resolved));
                 expect(resolver.results.count).to(equal(1));
                 expect(numericAddress(resolver.results.first!)).to(equal("8.8.8.8"))
             }
             
             it("resolves to empty") {
-                let resolver = SMNameResolver(hostname: "no-such-host.soutaro.com", port: 80);
+                let resolver = NameResolver(hostname: "no-such-host.soutaro.com", port: 80);
                 resolver.run();
                 
                 let expectedError = NSError(
-                    domain: SMNameResolverErrorDomain,
-                    code: SMNameResolverErrorCode.NameResolutionFailure.rawValue,
+                    domain: SMHTTPClientErrorDomain,
+                    code: SMHTTPClientErrorCode.NameResolutionFailure.rawValue,
                     userInfo: ["NSLocalizedDescription": "nodename nor servname provided, or not known"])
-                expect(resolver.status).to(equal(SMNameResolverState.Error(expectedError)));
+                expect(resolver.status).to(equal(NameResolverState.Error(expectedError)));
                 expect(resolver.results.count).to(equal(0));
             }
             
             it("can be aborted during resolve") {
-                let resolver = SMNameResolver(hostname: "no-such-host.local", port: 80);
+                let resolver = NameResolver(hostname: "no-such-host.local", port: 80);
                 
                 let queue = dispatch_queue_create("name-resolver-test.test", nil);
                 
                 let delay = 0.5 * Double(NSEC_PER_SEC)
                 let time  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
                 dispatch_after(time, queue, {
-                    expect(resolver.status).to(equal(SMNameResolverState.Running));
+                    expect(resolver.status).to(equal(NameResolverState.Running));
                     resolver.abort();
                 })
                 
@@ -87,7 +87,7 @@ class NameResolverTests: QuickSpec {
                 
                 let endTime = NSDate()
                 
-                expect(resolver.status).to(equal(SMNameResolverState.Aborted));
+                expect(resolver.status).to(equal(NameResolverState.Aborted));
                 expect(resolver.results.count).to(equal(0));
                 expect(endTime.timeIntervalSinceDate(startTime)).to(beLessThan(1));
             }

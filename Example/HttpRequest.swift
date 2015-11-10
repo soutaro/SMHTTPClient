@@ -1,11 +1,6 @@
 import Foundation
 
-public let SMHttpRequestErrorDomain = "SMHttpRequestErrorDomain"
-public enum SMHTtpRequestErrorCode: Int {
-    case MulformedResponse
-}
-
-public enum SMHttpMethod {
+public enum HttpMethod {
     case GET;
     case HEAD;
     case POST(NSData);
@@ -14,7 +9,7 @@ public enum SMHttpMethod {
     case DELETE;
 }
 
-public enum SMHttpRequestStatus: Equatable {
+public enum HttpRequestStatus: Equatable {
     case Initialized;
     case Connecting;
     case Connected;
@@ -35,7 +30,7 @@ internal func ==(a: [(String, String)], b: [(String, String)]) -> Bool {
     })
 }
 
-public func ==(a: SMHttpRequestStatus, b: SMHttpRequestStatus) -> Bool {
+public func ==(a: HttpRequestStatus, b: HttpRequestStatus) -> Bool {
     switch (a, b) {
     case (.Initialized, .Initialized): return true
     case (.Connecting, .Connecting): return true
@@ -48,42 +43,40 @@ public func ==(a: SMHttpRequestStatus, b: SMHttpRequestStatus) -> Bool {
     }
 }
 
-private enum SMHttpRequestError: ErrorType {
+private enum HttpRequestError: ErrorType {
     case Error(NSError)
     case Aborted
     case MulformedResponse(String)
 }
 
-
-
-public class SMHttpRequest {
+public class HttpRequest {
     public let address: sockaddr
     public let path: String
-    public let method: SMHttpMethod
+    public let method: HttpMethod
     public let requestHeader: [(String, String)]
     
     private var _socket: Int32
-    private var _status: SMHttpRequestStatus
+    private var _status: HttpRequestStatus
     
     private let _queue: dispatch_queue_t
     private let _semaphore: dispatch_semaphore_t
     
-    public init(address: sockaddr, path: String, method: SMHttpMethod, header: [(String, String)]) {
+    public init(address: sockaddr, path: String, method: HttpMethod, header: [(String, String)]) {
         self.address = address
         self.path = path
         self.method = method
         self.requestHeader = header
         self._status = .Initialized
         
-        self._queue = dispatch_queue_create("com.soutaro.SMHttpRequest.queue", nil)
+        self._queue = dispatch_queue_create("com.soutaro.SMHTTPClient.HttpRequest.queue", nil)
         self._semaphore = dispatch_semaphore_create(0)
         
         self._socket = 0
     }
     
-    public var status: SMHttpRequestStatus {
+    public var status: HttpRequestStatus {
         get {
-            var status: SMHttpRequestStatus = .Initialized
+            var status: HttpRequestStatus = .Initialized
             dispatch_sync(self._queue) {
                 status = self._status
             }
@@ -104,11 +97,11 @@ public class SMHttpRequest {
                 try self.connect()
                 try self.send()
                 try self.receive()
-            } catch SMHttpRequestError.Error(let error) {
+            } catch HttpRequestError.Error(let error) {
                 self.setErrorStatus(error)
-            } catch SMHttpRequestError.MulformedResponse(let message) {
-                self.setErrorStatus(NSError(domain: SMHttpRequestErrorDomain, code: SMHTtpRequestErrorCode.MulformedResponse.rawValue, userInfo: [NSLocalizedDescriptionKey: message]))
-            } catch SMHttpRequestError.Aborted {
+            } catch HttpRequestError.MulformedResponse(let message) {
+                self.setErrorStatus(NSError(domain: SMHTTPClientErrorDomain, code: SMHTTPClientErrorCode.MulformedHTTPResponse.rawValue, userInfo: [NSLocalizedDescriptionKey: message]))
+            } catch HttpRequestError.Aborted {
                 // Nothing to do
             } catch _ {
                 // Nothing to do
@@ -143,7 +136,7 @@ public class SMHttpRequest {
         if sock != -1 {
             self._socket = sock
         } else {
-            throw SMHttpRequestError.Error(NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil))
+            throw HttpRequestError.Error(NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil))
         }
         
         self.setStatus(.Connecting)
@@ -158,7 +151,7 @@ public class SMHttpRequest {
         if ret == 0 {
             self.setStatus(.Connected)
         } else {
-            throw SMHttpRequestError.Error(NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil))
+            throw HttpRequestError.Error(NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil))
         }
     }
     
@@ -214,7 +207,7 @@ public class SMHttpRequest {
             if ret >= 0 {
                 offset = offset + ret
             } else {
-                throw SMHttpRequestError.Error(NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil))
+                throw HttpRequestError.Error(NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil))
             }
             
             try self.abortIfAborted()
@@ -224,11 +217,11 @@ public class SMHttpRequest {
     }
     
     private func receive() throws {
-        let buffer = SMBuffer() { (buf: UnsafeMutablePointer<UInt8>, size: Int) throws -> Int in
+        let buffer = Buffer() { (buf: UnsafeMutablePointer<UInt8>, size: Int) throws -> Int in
             let read = recv(self._socket, buf, size, 0)
             try self.abortIfAborted()
             if read == 0 {
-                throw SMHttpRequestError.MulformedResponse("recv returned 0 bytes read, through not aborted yet...")
+                throw HttpRequestError.MulformedResponse("recv returned 0 bytes read, through not aborted yet...")
             }
             return read
         }
@@ -240,18 +233,18 @@ public class SMHttpRequest {
         self.setStatus(.Completed(status, header, body))
     }
     
-    private func readStatusLine(buffer: SMBuffer) throws -> Int {
+    private func readStatusLine(buffer: Buffer) throws -> Int {
         let line = try buffer.readLine()
         
         if !line.hasPrefix("HTTP/1.1 ") {
-            throw SMHttpRequestError.MulformedResponse("The response does not look like a HTTP/1.1 response")
+            throw HttpRequestError.MulformedResponse("The response does not look like a HTTP/1.1 response")
         }
         
         let code = (line as NSString).substringWithRange(NSRange(location: 9, length: 3))
         return Int(code)!
     }
     
-    private func readResponseHeader(buffer: SMBuffer) throws -> [(String, String)] {
+    private func readResponseHeader(buffer: Buffer) throws -> [(String, String)] {
         var header: [(String, String)] = []
         
         while true {
@@ -269,13 +262,13 @@ public class SMHttpRequest {
                 )
                 header.append(pair)
             } else {
-                throw SMHttpRequestError.MulformedResponse("Header line looks mulformed... (\(line))")
+                throw HttpRequestError.MulformedResponse("Header line looks mulformed... (\(line))")
             }
 
         }
     }
     
-    private func readBody(header: [(String, String)], buffer: SMBuffer) throws -> NSData {
+    private func readBody(header: [(String, String)], buffer: Buffer) throws -> NSData {
         let transferEncoding = self.findHeaderValue(header, name: "Transfer-Encoding", defaultEncoding: "identity")
         
         if transferEncoding.componentsSeparatedByString(" ").contains("chunked") {
@@ -316,7 +309,7 @@ public class SMHttpRequest {
         }
     }
     
-    private func readNextChunk(buffer: SMBuffer) throws -> NSData {
+    private func readNextChunk(buffer: Buffer) throws -> NSData {
         let line = try buffer.readLine()
         let scanner = NSScanner(string: line)
         var size: UInt32 = 0
@@ -351,7 +344,7 @@ public class SMHttpRequest {
         }
         
         if aborted {
-            throw SMHttpRequestError.Aborted
+            throw HttpRequestError.Aborted
         }
     }
     
@@ -371,7 +364,7 @@ public class SMHttpRequest {
         }
     }
     
-    private func setStatus(status: SMHttpRequestStatus) {
+    private func setStatus(status: HttpRequestStatus) {
         dispatch_sync(self._queue) {
             switch self._status {
             case .Aborted, .Error(_):

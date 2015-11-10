@@ -1,11 +1,6 @@
 import Foundation
 
-public let SMNameResolverErrorDomain: String = "SMNameResolverErrorDomain";
-public enum SMNameResolverErrorCode: Int {
-    case NameResolutionFailure;
-}
-
-public enum SMNameResolverState: Equatable {
+public enum NameResolverState: Equatable {
     case Initialized;
     case Running;
     case Resolved;
@@ -13,7 +8,7 @@ public enum SMNameResolverState: Equatable {
     case Aborted;
 }
 
-public func ==(a: SMNameResolverState, b: SMNameResolverState) -> Bool {
+public func ==(a: NameResolverState, b: NameResolverState) -> Bool {
     switch (a, b) {
     case (.Initialized, .Initialized): return true;
     case (.Running, .Running): return true;
@@ -24,9 +19,9 @@ public func ==(a: SMNameResolverState, b: SMNameResolverState) -> Bool {
     }
 }
 
-public class SMNameResolver {
+public class NameResolver {
     private var _results: [sockaddr];
-    private var _status: SMNameResolverState;
+    private var _status: NameResolverState;
     private let _mutex: dispatch_queue_t;
     private let _semaphore: dispatch_semaphore_t;
     
@@ -40,7 +35,7 @@ public class SMNameResolver {
         self.hostname = hostname;
         self.port = port;
         
-        self._mutex = dispatch_queue_create("com.soutaro.SMNameResolver.mutex", nil);
+        self._mutex = dispatch_queue_create("com.soutaro.SMHTTPClient.NameResolver.mutex", nil);
         self._semaphore = dispatch_semaphore_create(0);
     }
     
@@ -84,8 +79,8 @@ public class SMNameResolver {
                     // error
                     let message = String.fromCString(gai_strerror(ret))
                     let nserror = NSError(
-                        domain: SMNameResolverErrorDomain,
-                        code: SMNameResolverErrorCode.NameResolutionFailure.rawValue,
+                        domain: SMHTTPClientErrorDomain,
+                        code: SMHTTPClientErrorCode.NameResolutionFailure.rawValue,
                         userInfo: [NSLocalizedDescriptionKey: message!]
                     );
                     self._status = .Error(nserror);
@@ -126,7 +121,7 @@ public class SMNameResolver {
         }
     }
     
-    public var status: SMNameResolverState {
+    public var status: NameResolverState {
         get {
             return self._status;
         }
