@@ -222,6 +222,9 @@ public class HttpRequest {
             if read == 0 {
                 throw HttpRequestError.MulformedResponse("recv returned 0 bytes read, through not aborted yet...")
             }
+            if read < 0 {
+                throw HttpRequestError.Error(NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil))
+            }
             return read
         }
         
