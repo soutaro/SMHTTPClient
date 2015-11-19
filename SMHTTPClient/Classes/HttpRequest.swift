@@ -120,6 +120,7 @@ public class HttpRequest {
                  break
             default:
                 self._status = .Aborted
+                self.close()
             }
         }
         
