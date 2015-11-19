@@ -140,8 +140,6 @@ public class HttpRequest {
             throw HttpRequestError.Error(NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil))
         }
         
-        self.setStatus(.Connecting)
-        
         var address = self.address
         let ret = withUnsafePointer(&address) { ptr in
             Darwin.connect(self._socket, ptr, UInt32(ptr.memory.sa_len))
