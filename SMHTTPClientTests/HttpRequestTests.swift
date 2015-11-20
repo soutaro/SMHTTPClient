@@ -56,6 +56,23 @@ class HttpRequestTests: QuickSpec {
             }
         }
         
+        describe("HttpRequest#run") {
+            it("fails if called twice") {
+                server!.addDefaultHandlerForMethod("GET", requestClass: GCDWebServerRequest.self, processBlock: { (request: GCDWebServerRequest!) -> GCDWebServerResponse! in
+                    GCDWebServerResponse(statusCode: 200)
+                })
+                server!.startWithPort(8080, bonjourName: nil)
+                
+                let request = HttpRequest(address: address!, path: "/", method: .GET, header: [])
+                
+                request.run()
+                expect(requestSuccessfullyCompleted(request)).to(beTrue())
+                
+                request.run()
+                expect(requestHasError(request)).to(beTrue())
+            }
+        }
+        
         describe("HttpRequest#connect") {
             describe("establishing connection") {
                 it("connects to server") {

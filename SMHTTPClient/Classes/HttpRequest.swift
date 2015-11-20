@@ -91,6 +91,13 @@ public class HttpRequest {
     }
     
     public func run() {
+        if self.status != .Initialized {
+            dispatch_sync(self._queue) {
+                self._status = .Error(NSError(domain: SMHTTPClientErrorDomain, code: SMHTTPClientErrorCode.DoubleRun.rawValue, userInfo: nil))
+            }
+            return
+        }
+        
         self.setStatus(.Connecting);
         
         let q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
