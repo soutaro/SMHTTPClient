@@ -74,6 +74,12 @@ public class HttpRequest {
         self._socket = 0
     }
     
+    deinit {
+        if self._socket != 0 {
+            Darwin.close(self._socket)
+        }
+    }
+    
     public var status: HttpRequestStatus {
         get {
             var status: HttpRequestStatus = .Initialized
@@ -91,7 +97,9 @@ public class HttpRequest {
         dispatch_async(q) {
             do {
                 defer {
-                    self.close()
+                    if self._socket != 0 {
+                        shutdown(self._socket, SHUT_RDWR)
+                    }
                 }
                 
                 try self.connect()
@@ -120,7 +128,9 @@ public class HttpRequest {
                  break
             default:
                 self._status = .Aborted
-                self.close()
+                if self._socket != 0 {
+                    shutdown(self._socket, SHUT_RDWR)
+                }
             }
         }
         
@@ -329,13 +339,6 @@ public class HttpRequest {
         }
         
         return defaultEncoding
-    }
-    
-    private func close() {
-        if self._socket != 0 {
-            Darwin.close(self._socket)
-            self._socket = 0
-        }
     }
     
     private func abortIfAborted() throws {
