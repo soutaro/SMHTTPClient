@@ -6,7 +6,7 @@
 [![Platform](https://img.shields.io/cocoapods/p/SMHTTPClient.svg?style=flat)](http://cocoapods.org/pods/SMHTTPClient)
 
 SMHTTPClient is a HTTP/1.1 client based on socket API.
-Since it does not depend on NSURLSession nor CFHTTP, application transport security does not prohibit sending plain-text requests with this library.
+Since it does not depend on NSURLSession, application transport security does not prohibit sending plain-text requests with this library.
 
 ## Usage
 
@@ -47,8 +47,6 @@ request.run()
 
 // request.status will be .Aborted
 ```
-
-## Requirements
 
 ## Installation
 
