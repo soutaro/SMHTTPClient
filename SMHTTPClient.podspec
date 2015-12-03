@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "SMHTTPClient"
-  s.version          = "0.1.0"
+  s.version          = "0.2.0"
   s.summary          = "HTTP/1.1 client, based on socket"
 
   s.description      = <<-DESC
