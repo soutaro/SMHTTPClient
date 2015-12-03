@@ -148,14 +148,14 @@ public class HttpRequest {
         let sock = socket(Int32(self.address.sa_family), SOCK_STREAM, 0)
         try self.abortIfAborted()
         
-        var one: Int32 = 1;
-        setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, &one, UInt32(sizeof(Int32)))
-        
         if sock != -1 {
             self._socket = sock
         } else {
             throw HttpRequestError.Error(NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil))
         }
+        
+        var one: Int32 = 1;
+        setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, &one, UInt32(sizeof(Int32)))
         
         var address = self.address
         let ret = withUnsafePointer(&address) { ptr in
